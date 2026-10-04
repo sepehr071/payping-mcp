@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="https://raw.githubusercontent.com/sepehr071/payping-mcp/main/.github/banner.png" alt="payping-mcp: let your AI agent check sales and send invoices on PayPing" width="100%">
+
 # 💳 payping-mcp
 
 **Your PayPing merchant account, for AI agents.**<br>
