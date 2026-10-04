@@ -1,0 +1,55 @@
+[project]
+name = "payping-mcp"
+version = "0.1.0"
+description = "Local MCP server for PayPing (payping.ir) merchants: let AI agents read balance, sales, transactions, withdrawals, customers, products, coupons and invoices, and create customers, products, payment links, coupons and invoices."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Sepehr", email = "sepehr@nextofx.com" }]
+requires-python = ">=3.10"
+keywords = ["mcp", "model-context-protocol", "payping", "payment-gateway", "invoice", "iran", "ai-agent"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "mcp>=2.2,<3",
+    "httpx>=0.27",
+]
+
+[project.urls]
+Homepage = "https://github.com/sepehr071/payping-mcp"
+Issues = "https://github.com/sepehr071/payping-mcp/issues"
+
+[project.scripts]
+payping-mcp = "payping_mcp.server:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not live'"
+markers = [
+    "live: read-only calls to the real PayPing API with PAYPING_TOKEN (run with -m live)",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]  # long Field(description=...) strings read better on one line

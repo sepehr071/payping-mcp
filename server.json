@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.sepehr071/payping-mcp",
+  "title": "PayPing",
+  "description": "PayPing merchant account for agents: balance, sales, invoices; create invoices and payment links.",
+  "repository": {
+    "url": "https://github.com/sepehr071/payping-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/sepehr071/payping-mcp",
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "payping-mcp",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "PAYPING_TOKEN",
+          "description": "API token from the PayPing panel (app.payping.ir, Connections > Developers > Tokens).",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "PAYPING_MCP_PROXY",
+          "description": "Optional HTTP proxy URL for requests to PayPing; system proxy settings are ignored.",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
