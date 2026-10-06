@@ -13,7 +13,7 @@ and create invoices, payment links and coupons after you confirm, all from your 
 [![PyPI](https://img.shields.io/pypi/v/payping-mcp?color=2563eb)](https://pypi.org/project/payping-mcp/)
 [![Python](https://img.shields.io/pypi/pyversions/payping-mcp)](https://pypi.org/project/payping-mcp/)
 [![CI](https://github.com/sepehr071/payping-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sepehr071/payping-mcp/actions/workflows/ci.yml)
-[![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.sepehr071%2Fpayping--mcp-7c3aed)](https://registry.modelcontextprotocol.io/v0/servers?search=payping-mcp)
+[![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.sepehr071%2Fpayping--mcp-7c3aed)](https://registry.modelcontextprotocol.io/?q=payping-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-16a34a)](https://github.com/sepehr071/payping-mcp/blob/main/LICENSE)
 
 [![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=payping&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJwYXlwaW5nLW1jcCJdLCJlbnYiOnsiUEFZUElOR19UT0tFTiI6InlvdXItdG9rZW4ifX0=)
@@ -175,11 +175,27 @@ Then try:
 - "Create an invoice for Ali Rezaei: 2 hours of consulting at 1,500,000 Toman each. Show me before you create it."
 - <span dir="rtl">فاکتورهای پرداخت&zwnj;نشده این ماه را نشان بده.</span>
 
+## How it works
+
+```text
+  AI agent  (Claude, Cursor, Copilot, ...)
+      │
+      │  MCP over stdio
+      ▼
+  payping-mcp  (runs on your machine, holds PAYPING_TOKEN)
+      │
+      │  HTTPS (REST, Bearer token, optional proxy)
+      ├──────▶  api.payping.ir    (reports, customers, products, coupons, invoices)
+      └──────▶  oauth.payping.ir  (profile)
+```
+
+`payping-mcp` runs locally and calls PayPing's API with your own token. There's no hosted server in between.
+
 ## Tools
 
 All amounts are Toman, all dates UTC. Lists return at most 50 items per call and include `total`.
 
-Read-only:
+Read-only (15):
 
 | Tool | What it does |
 |---|---|
@@ -199,7 +215,7 @@ Read-only:
 | `payping_list_invoices` | Invoices, filter by status or customer |
 | `payping_get_invoice` | One invoice with items and its pay page url |
 
-Create and send (the agent must confirm with you first):
+Create and send (6; the agent must confirm with you first):
 
 | Tool | What it does |
 |---|---|
