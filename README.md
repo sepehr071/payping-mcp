@@ -2,11 +2,11 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/sepehr071/payping-mcp/main/.github/banner.png" alt="payping-mcp: let your AI agent check sales and send invoices on PayPing" width="100%">
+<img src="https://raw.githubusercontent.com/sepehr071/payping-mcp/main/.github/banner.png" alt="payping-mcp: unofficial PayPing MCP server for Claude, Cursor and Copilot" width="100%">
 
-# 💳 payping-mcp
+# 💳 payping-mcp: PayPing MCP server for AI agents
 
-**Your PayPing merchant account, for AI agents.**<br>
+**Unofficial PayPing (<span dir="rtl">پی&zwnj;پینگ</span>) MCP server: your Iranian merchant account, for AI agents.**<br>
 Let Claude, Cursor or Copilot read your balance, sales, transactions, customers, products, coupons and invoices,<br>
 and create invoices, payment links and coupons after you confirm, all from your own machine.
 
@@ -19,13 +19,29 @@ and create invoices, payment links and coupons after you confirm, all from your 
 [![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=payping&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJwYXlwaW5nLW1jcCJdLCJlbnYiOnsiUEFZUElOR19UT0tFTiI6InlvdXItdG9rZW4ifX0=)
 [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_payping--mcp-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=payping&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22payping-mcp%22%5D%2C%22env%22%3A%7B%22PAYPING_TOKEN%22%3A%22your-token%22%7D%7D)
 
-[Quick start](#quick-start) · [Token](#1-create-a-payping-token) · [Tools](#tools) · [Security](#privacy-and-security) · [Troubleshooting](#troubleshooting) · [فارسی](#فارسی)
+[Quick start](#quick-start) · [Token](#1-create-a-payping-token) · [Tools](#tools) · [Security](#privacy-and-security) · [Troubleshooting](#troubleshooting) · [FAQ](#faq) · [فارسی](#فارسی)
 
 </div>
 
 ---
 
-## What it can do
+## For AI agents
+
+- **What:** MCP server for a PayPing (payping.ir, Iran) merchant account. Amounts are Toman, dates UTC.
+- **Install:** `uvx payping-mcp` (needs [uv](https://docs.astral.sh/uv/getting-started/installation/), Python 3.10+; or `pip install payping-mcp`). Transport: stdio.
+- **Claude Code:** `claude mcp add payping -e PAYPING_TOKEN=your-token -- uvx payping-mcp`
+- **Auth:** `PAYPING_TOKEN` (required, a PayPing API token whose scopes decide what works); `PAYPING_MCP_PROXY` (optional HTTP proxy).
+- **Access:** acts on the user's account. 15 read tools and 6 create/send tools. Ask the user to confirm before any create or send tool. No tool can withdraw, refund, reverse or delete.
+- **Tools:** 21, prefixed `payping_*`. Start with `payping_get_profile`, `payping_get_balance`, `payping_get_sales_summary`, `payping_list_transactions`, `payping_list_invoices`. Balance and sales summary use dashboard endpoints that PayPing may reject for API tokens; the other tools still work.
+- **Typical sequence:** `payping_create_customer` -> `payping_create_invoice` -> `payping_send_invoice`; or `payping_create_product` -> `payping_create_payment_link`.
+- **Use when:** the user wants to see or create invoices, payment links, coupons, customers or sales figures in their own PayPing account.
+- **Do not use when:** the task is taking raw payments, verifying or refunding a payment, or paying out; there are no tools for these.
+- **Output:** compact JSON; lists return at most 50 items with `total`; pass codes (customer, product, invoice) between tools.
+- **Machine-readable:** [server.json](server.json); catalog of all Iran MCP servers: [awesome-iran-mcp](https://github.com/sepehr071/awesome-iran-mcp) (`TOOLS.md`, `servers.json`, `llms.txt`).
+
+---
+
+## What PayPing MCP can do
 
 - 💰 **Money:** wallet balance, sales totals for a period, transactions, one payment's real status, settlements to your bank
 - 🗂️ **Shop data:** list and search customers, products, coupons and invoices
@@ -302,11 +318,23 @@ Errors that carry a PayPing trace id: give that id to PayPing support.
 | `PAYPING_TOKEN` | yes | API token from the PayPing panel |
 | `PAYPING_MCP_PROXY` | no | HTTP proxy URL for every request, e.g. `http://user:pass@host:port`. System proxy settings are ignored. |
 
-## فارسی
+## FAQ
+
+**Is there a PayPing API for AI agents or an MCP server?** Yes. `payping-mcp` wraps the PayPing merchant API as MCP tools, so any MCP client can use it with your own token.
+
+**How do I use PayPing with Claude, Cursor or Copilot?** Create a PayPing token, then add the server with `claude mcp add payping -e PAYPING_TOKEN=your-token -- uvx payping-mcp` or the config blocks in [Quick start](#quick-start).
+
+**Is it official, safe and free?** It is unofficial and free (MIT). It runs on your machine, talks only to PayPing and cannot withdraw or refund. Give the token only the scopes you need; read-only scopes make it read-only.
+
+**Does it work outside Iran?** The PayPing API hosts answered both from Iran and from a foreign exit in testing. You still need a PayPing merchant account; set `PAYPING_MCP_PROXY` if your network needs a proxy.
+
+<a id="فارسی"></a>
+
+## فارسی: سرور MCP پی&zwnj;پینگ
 
 <div dir="rtl">
 
-**payping-mcp** به دستیار هوش مصنوعی شما (Claude، Cursor، Copilot و ...) اجازه می&zwnj;دهد موجودی، فروش، تراکنش&zwnj;ها، تسویه&zwnj;ها، مشتریان، محصولات، کدهای تخفیف و فاکتورهای حساب پی&zwnj;پینگ شما را ببیند، و پس از تأیید شما مشتری، محصول، لینک پرداخت، کد تخفیف و فاکتور بسازد.
+**payping-mcp** یک سرور MCP غیررسمی برای پی&zwnj;پینگ در ایران است و به دستیار هوش مصنوعی شما (Claude، Cursor، Copilot و ...) اجازه می&zwnj;دهد موجودی، فروش، تراکنش&zwnj;ها، تسویه&zwnj;ها، مشتریان، محصولات، کدهای تخفیف و فاکتورهای حساب پی&zwnj;پینگ شما را ببیند، و پس از تأیید شما مشتری، محصول، لینک پرداخت، کد تخفیف و فاکتور بسازد.
 
 - روی سیستم خود شما اجرا می&zwnj;شود و توکن فقط به سرورهای پی&zwnj;پینگ فرستاده می&zwnj;شود.
 - برداشت، استرداد، برگشت پرداخت و حذف با این ابزار ممکن نیست.
@@ -353,10 +381,17 @@ use it. Issues and PRs are welcome.
 Releases: bump the version in `pyproject.toml` and `server.json`, then push a `v*` tag. GitHub Actions tests,
 publishes to PyPI and the [MCP Registry](https://registry.modelcontextprotocol.io), and creates the GitHub Release.
 
+## Related servers
+
+- [Bale MCP server](https://github.com/sepehr071/bale-mcp) for sending messages through a Bale bot, the other account tool in this family.
+- More Iranian MCP servers (shopping, travel, books, health): [awesome-iran-mcp](https://github.com/sepehr071/awesome-iran-mcp).
+
 ## Disclaimer
 
 Unofficial and not affiliated with or endorsed by PayPing. It uses PayPing's API with your own token. Follow
 PayPing's terms.
+
+If this saves you clicks, a star helps others find it.
 
 ## License
 
