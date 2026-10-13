@@ -1,11 +1,11 @@
 [project]
 name = "payping-mcp"
-version = "0.1.1"
+version = "0.1.2"
 description = "Local MCP server for PayPing (payping.ir) merchants: let AI agents read balance, sales, transactions, withdrawals, customers, products, coupons and invoices, and create customers, products, payment links, coupons and invoices."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
-authors = [{ name = "Sepehr", email = "sepehr@nextofx.com" }]
+authors = [{ name = "Sepehr Radmard", email = "sepehrr80@gmail.com" }]
 requires-python = ">=3.10"
 keywords = ["mcp", "model-context-protocol", "payping", "payment-gateway", "invoice", "iran", "ai-agent"]
 classifiers = [
