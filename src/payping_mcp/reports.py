@@ -9,11 +9,11 @@ from urllib.parse import quote
 
 from pydantic import Field
 
-from .http import OAUTH, ApiError, call
+from .http import OAUTH, ApiError, call, call_obj
 from .registry import tool
 
 Offset = Annotated[int, Field(ge=0, description="Skip this many items (paging).")]
-Limit = Annotated[int, Field(ge=1, le=50, description="Items to return, 1-50 (PayPing's maximum is 50).")]
+Limit = Annotated[int, Field(ge=1, le=50, description="Items to return, 1-50.")]
 Code = Annotated[str, Field(min_length=1, max_length=100)]
 FromDate = Annotated[date | None, Field(description="First day to include (YYYY-MM-DD, UTC).")]
 ToDate = Annotated[date | None, Field(description="Last day to include (YYYY-MM-DD, UTC).")]
@@ -52,7 +52,7 @@ def _range(from_date: date | None, to_date: date | None) -> dict[str, str]:
 async def payping_get_profile() -> dict[str, Any]:
     """Show the PayPing account behind PAYPING_TOKEN: username, name, email, phone and verification flags.
     Use first to confirm the token works."""
-    info = await call("GET", "/connect/userinfo", host=OAUTH)
+    info = await call_obj("GET", "/connect/userinfo", host=OAUTH)
     return {k: v for k, v in info.items() if not k.startswith("http")}
 
 
@@ -70,7 +70,7 @@ async def payping_get_sales_summary(from_date: FromDate = None, to_date: ToDate 
     to_date = to_date or datetime.now(timezone.utc).date()
     from_date = from_date or to_date - timedelta(days=30)
     body = {"clientId": [], "fromDate": from_date.isoformat(), "terminalId": 0, "toDate": to_date.isoformat()}
-    return _no_nulls(await call("POST", "/v1/report/DashboardSummery", json=body))
+    return _no_nulls(await call_obj("POST", "/v1/report/DashboardSummery", json=body))
 
 
 @tool("PayPing: list transactions")
@@ -98,9 +98,9 @@ async def payping_list_transactions(
 
 @tool("PayPing: payment detail")
 async def payping_get_payment(code: Code) -> dict[str, Any]:
-    """Full detail of one payment by its payment code: amount, dates, payer, card, fees, refund state and
-    paymentStatus with a plain-English status_text. Use it to check whether a payment really succeeded."""
-    out = await call("GET", f"/v1/report/{segment(code)}")
+    """One payment by payment code: amount, dates, payer, card, fees, refund state, paymentStatus plus
+    status_text. Use it to check whether a payment really succeeded."""
+    out = await call_obj("GET", f"/v1/report/{segment(code)}")
     if out.get("paymentStatus") in PAYMENT_STATUS:
         out["status_text"] = PAYMENT_STATUS[out["paymentStatus"]]
     return out

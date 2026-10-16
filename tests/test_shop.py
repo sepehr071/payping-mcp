@@ -166,3 +166,10 @@ async def test_create_invoice_needs_items(client, api):
 async def test_send_invoice(client, api):
     api["POST /v2/invoice/Send/inv7"] = lambda r: httpx.Response(200, json={"success": True, "message": "ok"})
     assert await call(client, "payping_send_invoice", {"code": "inv7"}) == {"success": True, "message": "ok"}
+
+
+async def test_payment_link_rejects_non_https_redirect(client, api):
+    result = await client.call_tool(
+        "payping_create_payment_link", {"product_code": "p9", "redirect_url": "http://x.ir"}
+    )
+    assert result.is_error and not api.calls

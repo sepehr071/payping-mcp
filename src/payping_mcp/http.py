@@ -20,6 +20,8 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 API = "https://api.payping.ir"
 OAUTH = "https://oauth.payping.ir"
 MAX_CONCURRENCY = 4
+RETRY_STATUS = {429, 502, 503}
+RETRY_DELAY = 1.0  # seconds
 
 _transport: httpx.AsyncBaseTransport | None = None
 _client: httpx.AsyncClient | None = None
@@ -93,6 +95,14 @@ def _error_text(body: Any) -> str:
     return text
 
 
+async def call_obj(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    """Like `call`, but the body must be a JSON object (an empty or odd reply becomes an ApiError)."""
+    out = await call(*args, **kwargs)
+    if not isinstance(out, dict):
+        raise ApiError("PayPing returned an empty or unexpected response.")
+    return out
+
+
 async def call(
     method: str, path: str, *, params: dict[str, Any] | None = None, json: Any = None, host: str = API
 ) -> Any:
@@ -100,16 +110,20 @@ async def call(
     headers = {"Authorization": f"Bearer {token()}"}
     params = {k: v for k, v in (params or {}).items() if v is not None}
     client, limit = _get_client()
-    try:
-        async with limit:
-            r = await client.request(method, host + path, params=params or None, json=json, headers=headers)
-    except httpx.TimeoutException as e:
-        raise ApiError("PayPing did not answer in time. Try again in a moment.") from e
-    except httpx.RequestError as e:
-        raise ApiError(
-            f"Could not reach PayPing ({type(e).__name__}). Check the internet connection, or set "
-            "PAYPING_MCP_PROXY to route through a proxy."
-        ) from e
+    for attempt in range(2 if method == "GET" else 1):  # only idempotent GETs are retried, once
+        try:
+            async with limit:
+                r = await client.request(method, host + path, params=params or None, json=json, headers=headers)
+        except httpx.TimeoutException as e:
+            raise ApiError("PayPing did not answer in time. Try again in a moment.") from e
+        except httpx.RequestError as e:
+            raise ApiError(
+                f"Could not reach PayPing ({type(e).__name__}). Check the internet connection, or set "
+                "PAYPING_MCP_PROXY to route through a proxy."
+            ) from e
+        if r.status_code not in RETRY_STATUS or attempt:
+            break
+        await asyncio.sleep(RETRY_DELAY)
     try:
         body = r.json() if r.content else None
     except ValueError:

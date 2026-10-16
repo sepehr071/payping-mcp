@@ -86,3 +86,20 @@ async def test_non_json_success_is_an_error(api):
 def test_httpx_does_not_log_requests():
     assert logging.getLogger("httpx").getEffectiveLevel() >= logging.WARNING
     assert logging.getLogger("httpcore").getEffectiveLevel() >= logging.WARNING
+
+
+async def test_get_retries_once_on_429_but_post_does_not(api, monkeypatch):
+    monkeypatch.setattr(http, "RETRY_DELAY", 0)
+    api["GET /a"] = lambda r: httpx.Response(429 if len(api.calls) == 1 else 200, json={"ok": True})
+    assert await http.call("GET", "/a") == {"ok": True}
+    api["POST /b"] = lambda r: httpx.Response(503, json={"message": "down"})
+    api.calls.clear()
+    with pytest.raises(http.ApiError):
+        await http.call("POST", "/b", json={})
+    assert len(api.calls) == 1
+
+
+async def test_call_obj_rejects_empty_body(api):
+    api["GET /v1/report/p1"] = lambda r: httpx.Response(200)
+    with pytest.raises(http.ApiError, match="empty or unexpected"):
+        await http.call_obj("GET", "/v1/report/p1")

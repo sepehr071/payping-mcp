@@ -8,7 +8,7 @@ from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field
 
-from .http import ApiError, call
+from .http import ApiError, call, call_obj
 from .registry import tool
 from .reports import Code, Limit, Offset, segment
 
@@ -102,7 +102,7 @@ async def payping_list_invoices(
 async def payping_get_invoice(code: Code) -> dict[str, Any]:
     """One invoice by code with its items, customer, status and payment code, plus `url`, the public page where
     the customer pays."""
-    out = await call("GET", f"/v2/invoice/{segment(code)}")
+    out = await call_obj("GET", f"/v2/invoice/{segment(code)}")
     out["url"] = f"{LINK}/v/{segment(code)}"
     return out
 
@@ -156,11 +156,13 @@ async def payping_create_product(
 @tool("PayPing: create payment link", sends=True)
 async def payping_create_payment_link(
     product_code: Code,
-    redirect_url: Annotated[str | None, Field(max_length=500, description="Page to open after payment.")] = None,
+    redirect_url: Annotated[
+        str | None, Field(max_length=500, pattern=r"^https://\S+$", description="https:// page to open after payment.")
+    ] = None,
     ask_address: Annotated[bool, Field(description="Ask the payer for a postal address.")] = False,
 ) -> dict[str, Any]:
-    """Make a permanent public payment page for a product and return its `url` (https://ppng.ir/d/...), which
-    anyone can open and pay. Creates real data: confirm with the user before calling."""
+    """Make a permanent public payment page for a product; returns its `url` (https://ppng.ir/d/...).
+    Creates real data: confirm with the user before calling."""
     body = _set({"productCode": product_code, "getAddress": ask_address}, redirectPage=redirect_url)
     out = await call("POST", "/v1/permalink", json=body)
     return {"code": (out or {}).get("code", product_code), "url": f"{LINK}/d/{segment(product_code)}"}
@@ -205,9 +207,9 @@ async def payping_create_invoice(
     due_date: Annotated[date | None, Field(description="Pay by this day (YYYY-MM-DD).")] = None,
     notes: Annotated[str | None, Field(max_length=2000, description="Shown to the customer.")] = None,
 ) -> dict[str, Any]:
-    """Create an invoice for a saved customer, ready to pay, and return its `code`, `payCode` and `url` (the
-    public page where the customer pays). It is not sent; use payping_send_invoice or share the url.
-    Creates real data: confirm customer, items and prices with the user before calling."""
+    """Create an invoice for a saved customer; returns `code`, `payCode` and `url` (public pay page). Not sent:
+    call payping_send_invoice or share the url. Creates real data: confirm customer, items and prices with the
+    user before calling."""
     products = [
         _set(
             {"title": i.title, "amount": i.amount_toman, "quantity": i.quantity, "haveTax": i.has_tax},
@@ -221,7 +223,9 @@ async def payping_create_invoice(
         dueDate=f"{due_date.isoformat()}T23:59:59Z" if due_date else None,
         notes=notes,
     )
-    out = await call("POST", "/v2/invoice/FastInvoice", json=body)
+    out = await call_obj("POST", "/v2/invoice/FastInvoice", json=body)
+    if "code" not in out:
+        raise ApiError("PayPing created the invoice but returned no code; check the PayPing panel.")
     return {**out, "url": f"{LINK}/v/{segment(out['code'])}"}
 
 

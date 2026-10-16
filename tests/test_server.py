@@ -54,3 +54,24 @@ def test_readme_lists_every_tool():
 
     readme = (Path(__file__).parents[1] / "README.md").read_text(encoding="utf-8")
     assert {n for n in CREATES | READS if f"`{n}`" not in readme} == set()
+
+
+def test_no_nulls_drops_none_recursively():
+    from payping_mcp.server import _no_nulls
+
+    assert _no_nulls({"a": None, "b": [{"c": None, "d": 0}], "e": ""}) == {"b": [{"d": 0}], "e": ""}
+
+
+async def test_real_client_gets_one_text_block_and_no_output_schema(api):
+    from mcp import Client
+
+    from payping_mcp.server import mcp
+
+    api["GET /connect/userinfo"] = {"username": "u", "extra": None}
+    async with Client(mcp) as c:
+        tools = (await c.list_tools()).tools
+        assert all(t.output_schema is None for t in tools)
+        assert not any("title" in p for t in tools for p in t.input_schema.get("properties", {}).values())
+        r = await c.call_tool("payping_get_profile", {})
+    assert len(r.content) == 1 and r.content[0].type == "text"
+    assert r.structured_content is None and r.content[0].text == '{"username":"u"}'
