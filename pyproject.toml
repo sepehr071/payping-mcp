@@ -1,6 +1,6 @@
 [project]
 name = "payping-mcp"
-version = "0.2.1"
+version = "0.2.2"
 description = "Local MCP server for PayPing (payping.ir) merchants: let AI agents read balance, sales, transactions, withdrawals, customers, products, coupons and invoices, and create customers, products, payment links, coupons and invoices."
 readme = "README.md"
 license = "MIT"
