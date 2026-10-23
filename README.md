@@ -38,7 +38,7 @@ read balance, sales, transactions, customers, products, coupons and invoices, an
 - **Use when:** the user wants to see or create invoices, payment links, coupons, customers or sales figures in their own PayPing account.
 - **Do not use when:** the task is taking raw payments, verifying or refunding a payment, or paying out; there are no tools for these.
 - **Output:** compact JSON; lists return at most 50 items with `total` (page with `offset`); pass codes (customer, product, invoice) between tools.
-- **Machine-readable:** [`server.json`](https://github.com/sepehr071/payping-mcp/blob/main/server.json); catalog of all Iran MCP servers: [awesome-iran-mcp](https://github.com/sepehr071/awesome-iran-mcp) (`TOOLS.md`, `servers.json`, `llms.txt`).
+- **Machine-readable:** [`server.json`](https://github.com/sepehr071/payping-mcp/blob/main/server.json); catalog of all Iran MCP servers: [iran-mcp](https://github.com/sepehr071/iran-mcp) (`TOOLS.md`, `servers.json`, `llms.txt`).
 
 ## Why
 
@@ -502,7 +502,7 @@ publishes to PyPI and the [MCP Registry](https://registry.modelcontextprotocol.i
 
 ## Related servers
 
-- [awesome-iran-mcp](https://github.com/sepehr071/awesome-iran-mcp): catalog of all Iranian-service MCP servers
+- [iran-mcp](https://github.com/sepehr071/iran-mcp): catalog of all Iranian-service MCP servers
 - [bale-mcp](https://github.com/sepehr071/bale-mcp) for sending messages through a Bale bot, the other account tool in this family
 - [iran-tax-mcp](https://github.com/sepehr071/iran-tax-mcp) for Iranian tax data
 - [tgju-mcp](https://github.com/sepehr071/tgju-mcp) for dollar, gold, coin and commodity prices from TGJU
@@ -517,9 +517,9 @@ If this saves you clicks, a star helps others find it.
 
 ## Author
 
-<a href="https://www.linkedin.com/in/sepehr-radmard"><img src="https://raw.githubusercontent.com/sepehr071/awesome-iran-mcp/main/assets/author-banner.png" alt="Sepehr Radmard: open-source MCP servers for the Iranian web. LinkedIn: linkedin.com/in/sepehr-radmard" width="100%"></a>
+<a href="https://www.linkedin.com/in/sepehr-radmard"><img src="https://raw.githubusercontent.com/sepehr071/iran-mcp/main/assets/author-banner.png" alt="Sepehr Radmard: open-source MCP servers for the Iranian web. LinkedIn: linkedin.com/in/sepehr-radmard" width="100%"></a>
 
-Built and maintained by **Sepehr Radmard** (سپهر رادمرد). Connect on [LinkedIn](https://www.linkedin.com/in/sepehr-radmard) or follow [@sepehr071 on GitHub](https://github.com/sepehr071) for more MCP servers for Iranian websites, all listed in [awesome-iran-mcp](https://github.com/sepehr071/awesome-iran-mcp). If this saves you time, a star on the repo helps other people find it.
+Built and maintained by **Sepehr Radmard** (سپهر رادمرد). Connect on [LinkedIn](https://www.linkedin.com/in/sepehr-radmard) or follow [@sepehr071 on GitHub](https://github.com/sepehr071) for more MCP servers for Iranian websites, all listed in [iran-mcp](https://github.com/sepehr071/iran-mcp). If this saves you time, a star on the repo helps other people find it.
 
 ## License
 
