@@ -28,6 +28,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/sepehr071/payping-mcp"
 Issues = "https://github.com/sepehr071/payping-mcp/issues"
+Website = "https://mcpfarsi.ir/servers/payping/"
 
 [project.scripts]
 payping-mcp = "payping_mcp.server:main"

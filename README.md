@@ -15,6 +15,7 @@ read balance, sales, transactions, customers, products, coupons and invoices, an
 [![CI](https://github.com/sepehr071/payping-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sepehr071/payping-mcp/actions/workflows/ci.yml)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.sepehr071%2Fpayping--mcp-7c3aed)](https://registry.modelcontextprotocol.io/?q=payping-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-16a34a)](https://github.com/sepehr071/payping-mcp/blob/main/LICENSE)
+[![mcpfarsi](https://mcpfarsi.ir/badge/payping.svg)](https://mcpfarsi.ir/servers/payping/)
 
 [![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=payping&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJwYXlwaW5nLW1jcCJdLCJlbnYiOnsiUEFZUElOR19UT0tFTiI6InlvdXItdG9rZW4ifX0=)
 [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_payping--mcp-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=payping&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22payping-mcp%22%5D%2C%22env%22%3A%7B%22PAYPING_TOKEN%22%3A%22your-token%22%7D%7D)
@@ -507,6 +508,7 @@ publishes to PyPI and the [MCP Registry](https://registry.modelcontextprotocol.i
 - [iran-tax-mcp](https://github.com/sepehr071/iran-tax-mcp) for Iranian tax data
 - [tgju-mcp](https://github.com/sepehr071/tgju-mcp) for dollar, gold, coin and commodity prices from TGJU
 - [iran-crypto-mcp](https://github.com/sepehr071/iran-crypto-mcp) for crypto prices on Iranian exchanges
+- Listed on [mcpfarsi.ir](https://mcpfarsi.ir/servers/payping/), the Persian MCP marketplace
 
 ## Disclaimer
 
