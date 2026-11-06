@@ -13,7 +13,7 @@ from .registry import tool
 from .reports import Code, Limit, Offset, segment
 
 LINK = "https://ppng.ir"  # PayPing's public short links: /v/{invoice code}, /d/{product code}
-Search = Annotated[str | None, Field(max_length=100, description="Text to search for.")]
+Search = Annotated[str | None, Field(max_length=100)]
 Archived = Annotated[bool, Field(description="Include archived items.")]
 INVOICE_STATUS = {"draft": 0, "awaiting_payment": 1, "paid": 2, "overdue": 3, "cancelled": 4}
 
@@ -38,13 +38,13 @@ def _set(d: dict[str, Any], **fields: Any) -> dict[str, Any]:
 
 @tool("PayPing: list customers")
 async def payping_list_customers(search: Search = None, offset: Offset = 0, limit: Limit = 20) -> dict[str, Any]:
-    """List saved customers (code, name, phone, email, business name) with the total count."""
+    """List saved customers with total count."""
     return await _page("/v1/customer", "customers", {"offset": offset, "limit": limit, "search": search})
 
 
 @tool("PayPing: customer detail")
 async def payping_get_customer(code: Code) -> dict[str, Any]:
-    """One customer by code: name, contact details, address, national id, memo."""
+    """One customer by code."""
     return await call("GET", f"/v1/customer/{segment(code)}")
 
 
@@ -52,14 +52,14 @@ async def payping_get_customer(code: Code) -> dict[str, Any]:
 async def payping_list_products(
     search: Search = None, include_archived: Archived = False, offset: Offset = 0, limit: Limit = 20
 ) -> dict[str, Any]:
-    """List products (PayPing "financial items"): code, title, price (Toman), stock, active, has a payment link."""
+    """List products (PayPing "financial items") with total count."""
     params = {"offset": offset, "limit": limit, "search": search, "witharchived": include_archived}
     return await _page("/v1/product", "products", params)
 
 
 @tool("PayPing: product detail")
 async def payping_get_product(code: Code) -> dict[str, Any]:
-    """One product by code: title, description, price (Toman), stock, tax, image, category."""
+    """One product by code."""
     return await call("GET", f"/v1/product/{segment(code)}")
 
 
@@ -67,14 +67,14 @@ async def payping_get_product(code: Code) -> dict[str, Any]:
 async def payping_list_coupons(
     search: Search = None, include_archived: Archived = False, offset: Offset = 0, limit: Limit = 20
 ) -> dict[str, Any]:
-    """List discount coupons: name, type (0 = percent, 1 = Toman), amount, code, active, products it applies to."""
+    """List discount coupons (type 0 = percent, 1 = Toman) with total count."""
     params = {"offset": offset, "limit": limit, "search": search, "witharchived": include_archived}
     return await _page("/v1/coupon", "coupons", params)
 
 
 @tool("PayPing: coupon detail")
 async def payping_get_coupon(code: Code) -> dict[str, Any]:
-    """One coupon by code: amount, expiry, max uses, number of buyers and their total spend."""
+    """One coupon by code: expiry, max uses, buyers and their spend."""
     return await call("GET", f"/v1/coupon/{segment(code)}")
 
 
@@ -86,8 +86,7 @@ async def payping_list_invoices(
     offset: Offset = 0,
     limit: Limit = 20,
 ) -> dict[str, Any]:
-    """List invoices: code, number, title, status (0 draft, 1 awaiting payment, 2 paid, 3 overdue, 4 cancelled),
-    total (Toman), due and paid dates, customer."""
+    """List invoices (status 0 draft, 1 awaiting payment, 2 paid, 3 overdue, 4 cancelled) with total count."""
     params = {
         "offset": offset,
         "limit": limit,
@@ -100,8 +99,7 @@ async def payping_list_invoices(
 
 @tool("PayPing: invoice detail")
 async def payping_get_invoice(code: Code) -> dict[str, Any]:
-    """One invoice by code with its items, customer, status and payment code, plus `url`, the public page where
-    the customer pays."""
+    """One invoice by code with items, customer, status and `url` (public pay page)."""
     out = await call_obj("GET", f"/v2/invoice/{segment(code)}")
     out["url"] = f"{LINK}/v/{segment(code)}"
     return out
@@ -111,15 +109,14 @@ async def payping_get_invoice(code: Code) -> dict[str, Any]:
 async def payping_create_customer(
     first_name: Annotated[str, Field(min_length=1, max_length=100)],
     last_name: Annotated[str, Field(min_length=1, max_length=100)],
-    phone: Annotated[str | None, Field(max_length=20, description="Mobile number, e.g. 09121234567.")] = None,
+    phone: Annotated[str | None, Field(max_length=20, description="e.g. 09121234567.")] = None,
     email: Annotated[str | None, Field(max_length=200)] = None,
     business_name: Annotated[str | None, Field(max_length=200)] = None,
-    is_business: Annotated[bool, Field(description="True for a company (legal person).")] = False,
-    national_id: Annotated[str | None, Field(max_length=20, description="National code or economic code.")] = None,
+    is_business: Annotated[bool, Field(description="Company (legal person).")] = False,
+    national_id: Annotated[str | None, Field(max_length=20, description="National or economic code.")] = None,
     memo: Annotated[str | None, Field(max_length=1000, description="Private note.")] = None,
 ) -> dict[str, Any]:
-    """Save a new customer in the PayPing account and return it with its `code` (needed for invoices).
-    Creates real data: confirm the details with the user before calling."""
+    """Save a new customer; returns its `code` (needed for invoices). Confirm details with the user first."""
     body = _set(
         {"firstName": first_name, "lastName": last_name, "isBusiness": is_business},
         phone=phone,
@@ -135,13 +132,12 @@ async def payping_create_customer(
 async def payping_create_product(
     title: Annotated[str, Field(min_length=1, max_length=200)],
     amount_toman: Annotated[int | None, Field(ge=1, description="Price in Toman.")] = None,
-    amount_set_by_payer: Annotated[bool, Field(description="Payer types the amount (donations); no price.")] = False,
+    amount_set_by_payer: Annotated[bool, Field(description="Payer types the amount; no price.")] = False,
     quantity: Annotated[int | None, Field(ge=1, description="Stock; omit for unlimited.")] = None,
     description: Annotated[str | None, Field(max_length=2000)] = None,
     has_tax: Annotated[bool, Field(description="Add VAT to the price.")] = False,
 ) -> dict[str, Any]:
-    """Create a product (financial item) and return its `code`. Then payping_create_payment_link makes a public
-    payment page for it. Creates real data: confirm title and price with the user before calling."""
+    """Create a product; returns its `code`. Then payping_create_payment_link makes its public page. Confirm title and price with the user first."""
     if amount_toman is None and not amount_set_by_payer:
         raise ApiError("amount_toman is required unless amount_set_by_payer is true.")
     body = _set(
@@ -157,12 +153,11 @@ async def payping_create_product(
 async def payping_create_payment_link(
     product_code: Code,
     redirect_url: Annotated[
-        str | None, Field(max_length=500, pattern=r"^https://\S+$", description="https:// page to open after payment.")
+        str | None, Field(max_length=500, pattern=r"^https://\S+$", description="https:// page after payment.")
     ] = None,
     ask_address: Annotated[bool, Field(description="Ask the payer for a postal address.")] = False,
 ) -> dict[str, Any]:
-    """Make a permanent public payment page for a product; returns its `url` (https://ppng.ir/d/...).
-    Creates real data: confirm with the user before calling."""
+    """Make a permanent public payment page for a product; returns `url`. Confirm with the user first."""
     body = _set({"productCode": product_code, "getAddress": ask_address}, redirectPage=redirect_url)
     out = await call("POST", "/v1/permalink", json=body)
     return {"code": (out or {}).get("code", product_code), "url": f"{LINK}/d/{segment(product_code)}"}
@@ -171,14 +166,14 @@ async def payping_create_payment_link(
 @tool("PayPing: create coupon", sends=True)
 async def payping_create_coupon(
     name: Annotated[str, Field(min_length=1, max_length=100)],
-    kind: Annotated[Literal["percent", "toman"], Field(description="'percent' off, or a fixed Toman amount off.")],
+    kind: Annotated[Literal["percent", "toman"], Field(description="Percent off or fixed Toman off.")],
     amount: Annotated[int, Field(ge=1, description="Percent (1-100) or Toman, per `kind`.")],
-    coupon_code: Annotated[str | None, Field(max_length=50, description="Code buyers type; omit to generate.")] = None,
+    coupon_code: Annotated[str | None, Field(max_length=50, description="Omit to generate.")] = None,
     max_uses: Annotated[int | None, Field(ge=1)] = None,
     expires_on: Annotated[date | None, Field(description="Last valid day (YYYY-MM-DD).")] = None,
-    product_codes: Annotated[list[str] | None, Field(description="Limit to these products; omit for all.")] = None,
+    product_codes: Annotated[list[str] | None, Field(description="Omit for all products.")] = None,
 ) -> dict[str, Any]:
-    """Create an active discount coupon and return its `code`. Creates real data: confirm with the user first."""
+    """Create an active discount coupon; returns its `code`. Confirm with the user first."""
     if kind == "percent" and amount > 100:
         raise ApiError("A percent coupon amount must be 1-100.")
     body = _set(
@@ -207,9 +202,8 @@ async def payping_create_invoice(
     due_date: Annotated[date | None, Field(description="Pay by this day (YYYY-MM-DD).")] = None,
     notes: Annotated[str | None, Field(max_length=2000, description="Shown to the customer.")] = None,
 ) -> dict[str, Any]:
-    """Create an invoice for a saved customer; returns `code`, `payCode` and `url` (public pay page). Not sent:
-    call payping_send_invoice or share the url. Creates real data: confirm customer, items and prices with the
-    user before calling."""
+    """Create an invoice for a saved customer; returns `code`, `payCode`, `url` (pay page). Not sent: use payping_send_invoice
+    or share the url. Confirm customer, items and prices with the user first."""
     products = [
         _set(
             {"title": i.title, "amount": i.amount_toman, "quantity": i.quantity, "haveTax": i.has_tax},
@@ -231,6 +225,5 @@ async def payping_create_invoice(
 
 @tool("PayPing: send invoice", sends=True)
 async def payping_send_invoice(code: Code) -> dict[str, Any]:
-    """Send an invoice to its customer by SMS/email from PayPing. Messages a real person: confirm with the user
-    before calling."""
+    """Send an invoice to its customer by SMS/email. Confirm with the user first."""
     return await call("POST", f"/v2/invoice/Send/{segment(code)}") or {"success": True}
