@@ -14,7 +14,7 @@ read balance, sales, transactions, customers, products, coupons and invoices, an
 [![Python](https://img.shields.io/pypi/pyversions/payping-mcp)](https://pypi.org/project/payping-mcp/)
 [![CI](https://github.com/sepehr071/payping-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sepehr071/payping-mcp/actions/workflows/ci.yml)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.sepehr071%2Fpayping--mcp-7c3aed)](https://registry.modelcontextprotocol.io/?q=payping-mcp)
-[![License: MIT](https://img.shields.io/badge/license-MIT-16a34a)](https://github.com/sepehr071/payping-mcp/blob/main/LICENSE)
+[![License: PolyForm Noncommercial](https://img.shields.io/badge/license-PolyForm%20Noncommercial-c2410c)](https://github.com/sepehr071/payping-mcp/blob/main/LICENSE)
 [![mcpfarsi](https://mcpfarsi.ir/badge/payping.svg)](https://mcpfarsi.ir/servers/payping/)
 
 [![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=payping&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJwYXlwaW5nLW1jcCJdLCJlbnYiOnsiUEFZUElOR19UT0tFTiI6InlvdXItdG9rZW4ifX0=)
@@ -395,7 +395,7 @@ Create a PayPing token, then add the server with `claude mcp add payping -e PAYP
 <details>
 <summary><b>Is it official, safe and free?</b></summary>
 
-It is unofficial and free (MIT). It runs on your machine, talks only to PayPing and cannot withdraw or refund. Give the token only the scopes you need; read-only scopes make it read-only.
+It is unofficial and free for non-commercial use. It runs on your machine, talks only to PayPing and cannot withdraw or refund. Give the token only the scopes you need; read-only scopes make it read-only.
 </details>
 
 <details>
@@ -523,6 +523,10 @@ If this saves you clicks, a star helps others find it.
 
 Built and maintained by **Sepehr Radmard** (سپهر رادمرد). Connect on [LinkedIn](https://www.linkedin.com/in/sepehr-radmard) or follow [@sepehr071 on GitHub](https://github.com/sepehr071) for more MCP servers for Iranian websites, all listed in [iran-mcp](https://github.com/sepehr071/iran-mcp). If this saves you time, a star on the repo helps other people find it.
 
-## License
+## مجوز استفاده (License)
 
-[MIT](https://github.com/sepehr071/payping-mcp/blob/main/LICENSE)
+<a href="https://www.linkedin.com/in/sepehr-radmard"><img src="https://raw.githubusercontent.com/sepehr071/iran-mcp/main/assets/license-banner.png" alt="استفادهٔ شخصی و غیرتجاری رایگان است؛ برای استفادهٔ تجاری با سپهر رادمرد تماس بگیرید. Free for personal and non-commercial use; commercial use needs a license." width="100%"></a>
+
+**استفادهٔ شخصی و غیرتجاری رایگان است.** استفاده در شرکت، محصول پولی یا پروژهٔ مشتری به مجوز تجاری نیاز دارد؛ از راه [لینکدین](https://www.linkedin.com/in/sepehr-radmard) یا [گیت&zwnj;هاب](https://github.com/sepehr071) با سپهر رادمرد تماس بگیرید. متن کامل: [PolyForm Noncommercial 1.0.0](https://github.com/sepehr071/payping-mcp/blob/main/LICENSE). نسخه&zwnj;های پیش از 0.3.1 با مجوز MIT منتشر شده&zwnj;اند و همان مجوز را دارند.
+
+Free for personal and non-commercial use under the [PolyForm Noncommercial License 1.0.0](https://github.com/sepehr071/payping-mcp/blob/main/LICENSE). Using it in a company, a paid product or a client project needs a commercial license: contact Sepehr Radmard on [LinkedIn](https://www.linkedin.com/in/sepehr-radmard) or [GitHub](https://github.com/sepehr071). Versions before 0.3.1 were released under MIT and stay under it.
