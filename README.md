@@ -289,22 +289,6 @@ Create and send (6; the agent must confirm with you first):
 | `payping_create_invoice` | Invoice for a saved customer; returns its pay page `https://ppng.ir/v/<invoice code>` |
 | `payping_send_invoice` | PayPing sends the invoice to the customer by SMS/email |
 
-## How it works
-
-```text
-  AI agent  (Claude, Cursor, Copilot, ...)
-      │
-      │  MCP over stdio
-      ▼
-  payping-mcp  (runs on your machine, holds PAYPING_TOKEN)
-      │
-      │  HTTPS (REST, Bearer token, optional proxy)
-      ├──────▶  api.payping.ir    (reports, customers, products, coupons, invoices)
-      └──────▶  oauth.payping.ir  (profile)
-```
-
-`payping-mcp` runs locally and calls PayPing's API with your own token. There's no hosted server in between. It ignores system proxy settings, retries a failed GET once after a second on HTTP 429, 502 or 503 (never a create or send call), keeps no cache, and returns each result as one compact JSON block with empty fields dropped.
-
 ## Privacy and security
 
 - **Local only.** The server runs on your machine and talks only to `api.payping.ir` and `oauth.payping.ir`. There is no relay server and no telemetry.
